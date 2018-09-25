@@ -1,0 +1,36 @@
+﻿@model MusicLibraryBrowser.WorkVersion
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>WorkVersion</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.WorkVersionName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.WorkVersionName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Lossless)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Lossless)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Work)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Work.WorkName)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.WorkVersionId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

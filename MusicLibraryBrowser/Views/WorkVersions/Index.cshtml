@@ -1,0 +1,52 @@
+﻿@model IEnumerable<MusicLibraryBrowser.WorkVersion>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Work Versions</h2>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.WorkVersionName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Lossless)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Work)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Work.Artist)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Work.Artist.Genre)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.WorkVersionName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Lossless)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Work.WorkName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Work.Artist.ArtistName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Work.Artist.Genre.GenreName)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
