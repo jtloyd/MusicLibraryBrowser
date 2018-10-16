@@ -5,9 +5,10 @@ from configparser import ConfigParser
 class pg_musiclibrary:
     _conn = None
     _sql_genre_insert = """INSERT INTO genre(genre_name) values(%s) RETURNING genre_id;"""
-    _sql_artist_insert = """INSERT INTO artist(artist_name, genre_id) values(%s, %s) RETURNING artist_id;"""
-    _sql_work_insert = """INSERT INTO work(work_name, artist_id) values(%s, %s) RETURNING work_id;"""
-    _sql_work_version_insert = """INSERT INTO work_version(work_version_name, work_id, lossless) values(%s, %s, %s) RETURNING work_version_id;"""    
+    _sql_artist_insert = """INSERT INTO artist(artist_name, genre_id, image_id) values(%s, %s, %s) RETURNING artist_id;"""
+    _sql_work_insert = """INSERT INTO work(work_name, artist_id, image_id) values(%s, %s, %s) RETURNING work_id;"""
+    _sql_work_version_insert = """INSERT INTO work_version(work_version_name, work_id, lossless, image_id) values(%s, %s, %s, %s) RETURNING work_version_id;"""    
+    _sql_image_insert = """INSERT INTO image(data) values(%s) RETURNING image_id;"""
 
     def config(self, filename='database.ini', section='postgresql'):
         # create a parser
@@ -68,7 +69,9 @@ class pg_musiclibrary:
         elif table == "work":
             sql = self._sql_work_insert
         elif table == "work_version":
-            sql = self._sql_work_version_insert            
+            sql = self._sql_work_version_insert
+        elif table == "image":
+            sql = self._sql_image_insert
         else:
             raise ValueError('invalid table name: %s' % table)
             

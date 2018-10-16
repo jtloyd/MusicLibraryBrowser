@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MusicLibraryBrowser;
+using MusicLibraryBrowser.ViewModels;
 
 namespace MusicLibraryBrowser.Controllers
 {
@@ -19,16 +20,42 @@ namespace MusicLibraryBrowser.Controllers
         }
 
         // GET: Artists
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int? genreid)
         {
             var musiclibraryContext = _context.Artist.Include(a => a.Genre);
-            var artists = from a in musiclibraryContext select a;
 
-            if (id != null)
+ //         var artists = from a in musiclibraryContext select a;
+            var artists = (from a in _context.Artist
+                          join i in _context.Image
+                          on a.ImageId equals i.ImageId
+                          into a1
+                          from b1 in a1.DefaultIfEmpty(new Image())
+                          select new ArtistViewModel
+                          {
+                              ArtistId = a.ArtistId,
+                              GenreId = a.GenreId,
+                              GenreName = a.Genre.GenreName,
+                              ArtistName = a.ArtistName,
+                              ImageId = a.ImageId,
+                              ImageData = b1.Data
+                          });
+
+            if (genreid != null)
             {
-                artists = artists.Where(a => a.GenreId == id);
+                artists = artists.Where(a => a.GenreId == genreid);
+                var genrename = from g in _context.Genre where g.GenreId == genreid select g.GenreName;
+                ViewData["GenreName"] = genrename.FirstOrDefault().ToString();
             }
-            return View(await artists.ToListAsync());
+            return View(await artists.OrderBy(a => a.ArtistName).ToListAsync());
+        }
+
+        public async Task<ActionResult> RenderImage(int id)
+        {
+            var image = await _context.Image.FindAsync(id);
+
+            byte[] photoBack = image.Data;
+
+            return File(photoBack, "image/png");
         }
 
         // GET: Artists/Details/5

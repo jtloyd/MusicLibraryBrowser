@@ -9,27 +9,24 @@ using MusicLibraryBrowser;
 
 namespace MusicLibraryBrowser.Controllers
 {
-    public class WorksController : Controller
+    public class ImagesController : Controller
     {
         private readonly musiclibraryContext _context;
 
-        public WorksController(musiclibraryContext context)
+        public ImagesController(musiclibraryContext context)
         {
             _context = context;
         }
 
-        // GET: Works
-        public async Task<IActionResult> Index(int? artistid)
+        // GET: Images
+        public async Task<IActionResult> Index(int? id)
         {
-            var musiclibraryContext = _context.Work.Include(w => w.Artist).ThenInclude(g => g.Genre);
-            var works = from w in musiclibraryContext select w;
-            if (artistid != null)
+            var images = from i in _context.Image select i;
+            if (id != null)
             {
-                works = works.Where(w => w.ArtistId == artistid);
-                var artistname = from a in _context.Artist where a.ArtistId == artistid select a.ArtistName;
-                ViewData["ArtistName"] = artistname.FirstOrDefault().ToString();
+                images = images.Where(i => i.ImageId == id);
             }
-            return View(await works.OrderBy(w => w.WorkName).ToListAsync());
+            return View(await images.ToListAsync());
         }
 
         public async Task<ActionResult> RenderImage(int id)
@@ -41,7 +38,7 @@ namespace MusicLibraryBrowser.Controllers
             return File(photoBack, "image/png");
         }
 
-        // GET: Works/Details/5
+        // GET: Images/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -49,42 +46,39 @@ namespace MusicLibraryBrowser.Controllers
                 return NotFound();
             }
 
-            var work = await _context.Work
-                .Include(w => w.Artist)
-                .FirstOrDefaultAsync(m => m.WorkId == id);
-            if (work == null)
+            var image = await _context.Image
+                .FirstOrDefaultAsync(m => m.ImageId == id);
+            if (image == null)
             {
                 return NotFound();
             }
 
-            return View(work);
+            return View(image);
         }
 
-        // GET: Works/Create
+        // GET: Images/Create
         public IActionResult Create()
         {
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistName");
             return View();
         }
 
-        // POST: Works/Create
+        // POST: Images/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("WorkId,ArtistId,WorkName")] Work work)
+        public async Task<IActionResult> Create([Bind("ImageId,Data")] Image image)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(work);
+                _context.Add(image);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistName", work.ArtistId);
-            return View(work);
+            return View(image);
         }
 
-        // GET: Works/Edit/5
+        // GET: Images/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -92,23 +86,22 @@ namespace MusicLibraryBrowser.Controllers
                 return NotFound();
             }
 
-            var work = await _context.Work.FindAsync(id);
-            if (work == null)
+            var image = await _context.Image.FindAsync(id);
+            if (image == null)
             {
                 return NotFound();
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistName", work.ArtistId);
-            return View(work);
+            return View(image);
         }
 
-        // POST: Works/Edit/5
+        // POST: Images/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("WorkId,ArtistId,WorkName")] Work work)
+        public async Task<IActionResult> Edit(int id, [Bind("ImageId,Data")] Image image)
         {
-            if (id != work.WorkId)
+            if (id != image.ImageId)
             {
                 return NotFound();
             }
@@ -117,12 +110,12 @@ namespace MusicLibraryBrowser.Controllers
             {
                 try
                 {
-                    _context.Update(work);
+                    _context.Update(image);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!WorkExists(work.WorkId))
+                    if (!ImageExists(image.ImageId))
                     {
                         return NotFound();
                     }
@@ -133,11 +126,10 @@ namespace MusicLibraryBrowser.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtistId"] = new SelectList(_context.Artist, "ArtistId", "ArtistName", work.ArtistId);
-            return View(work);
+            return View(image);
         }
 
-        // GET: Works/Delete/5
+        // GET: Images/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -145,31 +137,30 @@ namespace MusicLibraryBrowser.Controllers
                 return NotFound();
             }
 
-            var work = await _context.Work
-                .Include(w => w.Artist)
-                .FirstOrDefaultAsync(m => m.WorkId == id);
-            if (work == null)
+            var image = await _context.Image
+                .FirstOrDefaultAsync(m => m.ImageId == id);
+            if (image == null)
             {
                 return NotFound();
             }
 
-            return View(work);
+            return View(image);
         }
 
-        // POST: Works/Delete/5
+        // POST: Images/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var work = await _context.Work.FindAsync(id);
-            _context.Work.Remove(work);
+            var image = await _context.Image.FindAsync(id);
+            _context.Image.Remove(image);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool WorkExists(int id)
+        private bool ImageExists(int id)
         {
-            return _context.Work.Any(e => e.WorkId == id);
+            return _context.Image.Any(e => e.ImageId == id);
         }
     }
 }

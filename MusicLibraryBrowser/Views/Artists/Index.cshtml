@@ -1,10 +1,10 @@
-﻿@model IEnumerable<MusicLibraryBrowser.Artist>
+﻿@model IEnumerable<MusicLibraryBrowser.ViewModels.ArtistViewModel>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h2>Artists</h2>
+<h2>@ViewData["GenreName"] Artists</h2>
 
 
 <table class="table">
@@ -13,21 +13,27 @@
             <th>
                 @Html.DisplayNameFor(model => model.ArtistName)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Genre)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+        <tr height="80">
             <td align="justify">
-                <a asp-controller="Works" asp-action="Index" asp-route-id="@item.ArtistId">@Html.DisplayFor(modelItem => item.ArtistName)</a>
+                <a asp-controller="Works" asp-action="Index" asp-route-artistid="@item.ArtistId">@Html.DisplayFor(modelItem => item.ArtistName)</a>
             </td>
             <td align="justify">
-                @Html.DisplayFor(modelItem => item.Genre.GenreName)
-            </td>
+                @if (item.ImageId != -1)
+                {
+                    <a asp-controller="Images" asp-action="Index" asp-route-id="@item.ImageId">
+                        <img src="@Url.Action("RenderImage", new { id = item.ImageId})" width="70" height="70" />
+                    </a>
+                }
+                else
+                {
+                    <img src="~/images/person.png" width="70" height="70" />
+                }
+                </td>
         </tr>
 }
     </tbody>

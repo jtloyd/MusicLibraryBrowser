@@ -4,19 +4,13 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Works</h2>
+<h2>@ViewData["ArtistName"] Works</h2>
 
 <table class="table">
     <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.WorkName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Artist)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Artist.Genre)
             </th>
             <th></th>
         </tr>
@@ -25,13 +19,20 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                <a asp-controller="WorkVersions" asp-action="Index" asp-route-id="@item.WorkId">@Html.DisplayFor(modelItem => item.WorkName)</a>
+                <a asp-controller="WorkVersions" asp-action="Index" asp-route-workid="@item.WorkId">@Html.DisplayFor(modelItem => item.WorkName)</a>
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Artist.ArtistName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Artist.Genre.GenreName)
+                @if (item.ImageId != -1)
+                {
+//                   <img src="data:image;base64, @System.Convert.ToBase64String(item.ImageData)" width="70" height="70" />
+                    <a asp-controller="Images" asp-action="Index" asp-route-id="@item.ImageId">
+                        <img src="@Url.Action("RenderImage", new { id = item.ImageId})" width="70" height="70" />
+                    </a>
+                }
+                else
+                {
+                    <img src="~/images/person.png" width="70" height="70" />
+                }
             </td>
         </tr>
 }

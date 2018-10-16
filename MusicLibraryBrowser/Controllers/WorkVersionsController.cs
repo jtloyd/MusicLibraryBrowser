@@ -19,15 +19,32 @@ namespace MusicLibraryBrowser.Controllers
         }
 
         // GET: WorkVersions
-        public async Task<IActionResult> Index(int? id)
+        public async Task<IActionResult> Index(int? workid)
         {
             var musiclibraryContext = _context.WorkVersion.Include(w => w.Work).ThenInclude(a => a.Artist).ThenInclude(g => g.Genre);
             var workversions = from v in musiclibraryContext select v;
-            if (id != null)
+            if (workid != null)
             {
-                workversions = workversions.Where(w => w.WorkId == id);
+                workversions = workversions.Where(w => w.WorkId == workid);
+                if (workversions.Count() > 0)
+                {
+                    ViewData["ArtistName"] = workversions.First().Work.Artist.ArtistName;
+                    ViewData["WorkName"] = workversions.First().Work.WorkName;
+                }
+//                var work = from w in _context.Work where w.WorkId == workid select w;
+//                ViewData["ArtistName"] = work.FirstOrDefault().Artist.ArtistName;
+//                ViewData["WorkName"] = work.FirstOrDefault().WorkName;
             }
             return View(await workversions.ToListAsync());
+        }
+
+        public async Task<ActionResult> RenderImage(int id)
+        {
+            var image = await _context.Image.FindAsync(id);
+
+            byte[] photoBack = image.Data;
+
+            return File(photoBack, "image/png");
         }
 
         // GET: WorkVersions/Details/5

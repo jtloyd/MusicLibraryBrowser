@@ -41,6 +41,19 @@ def has_lossless(path):
                 
     return False
 
+def get_folderfilepath(path):
+    # path is the path of the directory to check for the following files:
+    fn = path + "\\" + "folder.png"
+    if os.path.exists(fn) and os.path.isfile(fn):
+        return fn
+    fn = path + "\\" + "folder.jpg"
+    if os.path.exists(fn) and os.path.isfile(fn):
+        return fn
+    fn = path + "\\" + "folder.jpeg"
+    if os.path.exists(fn) and os.path.isfile(fn):
+        return fn
+    return ""
+
 print(sys.version)
 print("there are %d arguments" % len(sys.argv))
 print("the arguments are: ", str(sys.argv))
@@ -63,13 +76,29 @@ with os.scandir(path) as it:
                 for entry1 in it1:
                     if not entry1.name.startswith('.') and entry1.is_dir():
                         print("." + entry1.name)
-                        ida = pgc.insert("artist", entry1.name, idg)
+                        # check for existence of folder.png or the like
+                        image_file = get_folderfilepath(path + entry.name + "\\" + entry1.name)
+                        if (image_file):
+                            print("." + image_file)
+                            blob = open(image_file, 'rb').read()
+                            idi = pgc.insert("image", psycopg2.Binary(blob))
+                        else:
+                            idi = -1;   # -1 id denotes no image for this item
+                        ida = pgc.insert("artist", entry1.name, idg, idi)
                         #print(ida)
                         with os.scandir(path + entry.name + "\\" + entry1.name) as it2:
                             for entry2 in it2:
                                 if not entry2.name.startswith('.') and entry2.is_dir() and entry2.name != "info":
                                     print(".." + entry2.name)
-                                    idw = pgc.insert("work", entry2.name, ida)
+                                    # check for existence of folder.png or the like
+                                    image_file = get_folderfilepath(path + entry.name + "\\" + entry1.name + "\\" + entry2.name)
+                                    if (image_file):
+                                        print(".." + image_file)
+                                        blob = open(image_file, 'rb').read()
+                                        idi = pgc.insert("image", psycopg2.Binary(blob))
+                                    else:
+                                        idi = -1;   # -1 id denotes no image for this item
+                                    idw = pgc.insert("work", entry2.name, ida, idi)
                                     #print(idw)
                                     workpath = path + entry.name + "\\" + entry1.name + "\\" + entry2.name
                                     with os.scandir(workpath) as it3:
@@ -78,12 +107,28 @@ with os.scandir(path) as it:
                                             if not entry3.name.startswith('.') and entry3.is_dir() and is_version(entry3.name) == True:
                                                 dcount = dcount + 1
                                                 print("..." + entry3.name)
-                                                idwv = pgc.insert("work_version", entry3.name, idw, has_lossless(workpath + "\\" + entry3.name))
+                                                # check for existence of folder.png or the like
+                                                image_file = get_folderfilepath(workpath + "\\" + entry3.name)
+                                                if (image_file):
+                                                    print("..." + image_file)
+                                                    blob = open(image_file, 'rb').read()
+                                                    idi = pgc.insert("image", psycopg2.Binary(blob))
+                                                else:
+                                                    idi = -1;   # -1 id denotes no image for this item                                                    
+                                                idwv = pgc.insert("work_version", entry3.name, idw, has_lossless(workpath + "\\" + entry3.name), idi)
                                                 #print(idwv)
                                         if dcount == 0:
                                             name = "[default]"
                                             print("..." + name)
-                                            idwv = pgc.insert("work_version", name, idw, has_lossless(workpath))
+                                            # check for existence of folder.png or the like
+                                            image_file = get_folderfilepath(workpath)
+                                            if (image_file):
+                                                print("..." + image_file)
+                                                blob = open(image_file, 'rb').read()
+                                                idi = pgc.insert("image", psycopg2.Binary(blob))
+                                            else:
+                                                idi = -1;   # -1 id denotes no image for this item                                                
+                                            idwv = pgc.insert("work_version", name, idw, has_lossless(workpath), idi)
                                             #print(idwv)
                         
                         

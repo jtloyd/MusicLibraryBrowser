@@ -13,6 +13,7 @@ namespace MusicLibraryBrowser
         public int ArtistId { get; set; }
         public int GenreId { get; set; }
         public string ArtistName { get; set; }
+        public int? ImageId { get; set; }
 
         public Genre Genre { get; set; }
         public ICollection<Work> Work { get; set; }

@@ -17,6 +17,7 @@ namespace MusicLibraryBrowser
 
         public virtual DbSet<Artist> Artist { get; set; }
         public virtual DbSet<Genre> Genre { get; set; }
+        public virtual DbSet<Image> Image { get; set; }
         public virtual DbSet<Work> Work { get; set; }
         public virtual DbSet<WorkVersion> WorkVersion { get; set; }
 
@@ -46,6 +47,10 @@ namespace MusicLibraryBrowser
 
                 entity.Property(e => e.GenreId).HasColumnName("genre_id");
 
+                entity.Property(e => e.ImageId)
+                    .HasColumnName("image_id")
+                    .HasDefaultValueSql("'-1'::integer");
+
                 entity.HasOne(d => d.Genre)
                     .WithMany(p => p.Artist)
                     .HasForeignKey(d => d.GenreId)
@@ -66,6 +71,19 @@ namespace MusicLibraryBrowser
                     .HasColumnType("character varying");
             });
 
+            modelBuilder.Entity<Image>(entity =>
+            {
+                entity.ToTable("image");
+
+                entity.Property(e => e.ImageId)
+                    .HasColumnName("image_id")
+                    .UseNpgsqlIdentityAlwaysColumn();
+
+                entity.Property(e => e.Data)
+                    .IsRequired()
+                    .HasColumnName("data");
+            });
+
             modelBuilder.Entity<Work>(entity =>
             {
                 entity.ToTable("work");
@@ -75,6 +93,10 @@ namespace MusicLibraryBrowser
                     .UseNpgsqlIdentityAlwaysColumn();
 
                 entity.Property(e => e.ArtistId).HasColumnName("artist_id");
+
+                entity.Property(e => e.ImageId)
+                    .HasColumnName("image_id")
+                    .HasDefaultValueSql("'-1'::integer");
 
                 entity.Property(e => e.WorkName)
                     .IsRequired()
@@ -94,6 +116,10 @@ namespace MusicLibraryBrowser
                 entity.Property(e => e.WorkVersionId)
                     .HasColumnName("work_version_id")
                     .UseNpgsqlIdentityAlwaysColumn();
+
+                entity.Property(e => e.ImageId)
+                    .HasColumnName("image_id")
+                    .HasDefaultValueSql("'-1'::integer");
 
                 entity.Property(e => e.Lossless).HasColumnName("lossless");
 

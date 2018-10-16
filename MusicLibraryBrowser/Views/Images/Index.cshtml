@@ -1,0 +1,29 @@
+﻿@model IEnumerable<MusicLibraryBrowser.Image>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Data)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                <img src="@Url.Action("RenderImage", new { id = item.ImageId})" width="500" height="500" />
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

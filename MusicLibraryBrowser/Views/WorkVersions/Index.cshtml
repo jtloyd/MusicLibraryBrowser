@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h2>Work Versions</h2>
+<h2>@ViewData["ArtistName"] - @ViewData["WorkName"] Work Versions</h2>
 
 
 <table class="table">
@@ -15,15 +15,6 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Lossless)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Work)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Work.Artist)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Work.Artist.Genre)
             </th>
             <th></th>
         </tr>
@@ -38,13 +29,16 @@
                 @Html.DisplayFor(modelItem => item.Lossless)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Work.WorkName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Work.Artist.ArtistName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Work.Artist.Genre.GenreName)
+                @if (item.ImageId != -1)
+                {
+                    <a asp-controller="Images" asp-action="Index" asp-route-id="@item.ImageId">
+                        <img src="@Url.Action("RenderImage", new { id = item.ImageId})" width="70" height="70" />
+                    </a>
+                }
+                else
+                {
+                    <img src="~/images/person.png" width="70" height="70" />
+                }
             </td>
         </tr>
 }
